@@ -854,28 +854,33 @@ int find_char(char *str, char target)
 
 int main(void)
 {
-    char A[11];
-    char B[11];
-    char C[11];
+    /*
+        All intracerebral data regarding double pointers
+        has been conclusively expunged from memory.
+    */
 
-    scanf("%s", A);
-    scanf("%s", B);
-    scanf("%s", C);
+    char AA[3][11];
+    char temp[11];
 
-    if (strcmp( strcmp(A,B) > 1 ? A : B ,C)>1)  //C is big
+    for (int i=0; i<3; i++) 
+        scanf("%10s", AA[i]);
+
+    for (int i=0; i<3-1; i++)
     {
-        printf("%s ", C);
-        printf("%s ", strcmp(A,B)>1 ? A : B);
-        printf("%s ", strcmp(A,B)>1 ? B : A);
+        for (int j=0; j<3-1-i; j++)
+        {
+            if (strcmp(AA[j], AA[j+1]) > 0)
+            {
+                strcpy(temp, AA[j]);
+                strcpy(AA[j],AA[j+1]);
+                strcpy(AA[j+1],temp);
+            }
+        }
     }
-    /* now examine B and C
-    else if
-    {
-        printf("%s ", strcmp(A,B)>1 ? A : B);
-        printf("%s ", strcmp(A,B)>1 ? B : A);
-        printf("%s ", C);
-    }
-        */
+
+    for (int i=0; i<3; i++) 
+        printf("%s", AA[i]);
+    printf("\n");
 
 	return 0;
 }
