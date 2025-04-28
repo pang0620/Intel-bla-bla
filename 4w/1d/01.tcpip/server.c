@@ -65,7 +65,7 @@ int main(int argc, char *argv[]) {
     do {
         clnt_sock =
             accept(serv_sock, (struct sockaddr *)&clnt_addr, &clnt_addr_size);
-        printf("clnt_sock: %d new client connected\n", clnt_sock);
+        printf("clnt_sock: new client %d connected\n", clnt_sock);
 
         if (clnt_sock == -1) {
             perror("accept()");
@@ -79,14 +79,20 @@ int main(int argc, char *argv[]) {
             if (str_len == -1) {
                 perror("read()");
                 error_handling("read() error");
-                exit(4);
             }
             if (str_len == 0)
                 break;
             printf("Message from client: %s\n", msg2);
+			/*
+			if (strcmp(msg2, "quit")==0)
+			{
+				printf("quiting...\n");
+				return 0;
+			}
+			*/
 			write(clnt_sock, msg2, sizeof(msg2)-1);
         } while (1);
-
+        printf("clnt_sock: client %d disconnected\n", clnt_sock);
     } while (1);
 
     close(clnt_sock);

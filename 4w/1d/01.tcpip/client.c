@@ -39,12 +39,16 @@ int main(int argc, char *argv[]) {
     do {
         // r&w: actual talk
         // sleep at read() til' something comes
-
         do {
 			printf("Enter Message: ");
 			scanf("%s", msg2);
 			//fgets("%s", 30, msg2);
 			write(sock, msg2, strlen(msg2));
+			if (strcmp(msg2, "quit")==0)
+			{
+				printf("quiting...\n");
+				return 0;
+			}
 
             str_len = read(sock, message, sizeof(message) - 1);
             message[str_len] = '\0';
@@ -52,7 +56,8 @@ int main(int argc, char *argv[]) {
                 error_handling("read() error");
             if (str_len == 0)
 				break;
-			printf("Message from server: %s\n", message);
+
+			printf("Message from server: '%s'\n", message);
 
         } while (1);
 
