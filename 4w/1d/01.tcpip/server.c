@@ -4,6 +4,7 @@
 #include <string.h>
 #include <sys/socket.h>
 #include <unistd.h>
+#define BUFFSIZE 100
 
 void error_handling(char *message);
 
@@ -16,7 +17,7 @@ int main(int argc, char *argv[]) {
     struct sockaddr_in clnt_addr;
     socklen_t clnt_addr_size;
 
-    char message[] = "Hello World!";
+    char message[BUFFSIZE];
     char msg2[30];
 
     if (argc != 2) {
@@ -52,7 +53,7 @@ int main(int argc, char *argv[]) {
     }
 
     // 03. listen: phone recieve mod on
-    if (listen(serv_sock, 5) < 0) // 5 times?
+    if (listen(serv_sock, 5) < 0) // 5 times -> kinda que?
     {
         perror("listen()");
         error_handling("listen() error");
@@ -67,6 +68,7 @@ int main(int argc, char *argv[]) {
             accept(serv_sock, (struct sockaddr *)&clnt_addr, &clnt_addr_size);
         printf("clnt_sock: new client %d connected\n", clnt_sock);
 
+		//exceptions
         if (clnt_sock == -1) {
             perror("accept()");
             error_handling("accept() error");
@@ -74,28 +76,31 @@ int main(int argc, char *argv[]) {
         }
 
         do {
+            // read() only reads strings; no \0 related. so...
             str_len = read(clnt_sock, msg2, sizeof(msg2) - 1);
-            msg2[str_len] = '\0';
-            if (str_len == -1) {
+
+            if (str_len > 0)
+			{
+				msg2[str_len] = '\0';
+				fputs("Message from client: ", stdout);
+				fputs(msg2, stdout);
+				fputc('\n', stdout);
+			}
+			//exceptions
+			else if (str_len == 0) // client disconnected * close(socket)
+                break;
+			else
+			{
                 perror("read()");
                 error_handling("read() error");
-            }
-            if (str_len == 0)
                 break;
-            printf("Message from client: %s\n", msg2);
-			/*
-			if (strcmp(msg2, "quit")==0)
-			{
-				printf("quiting...\n");
-				return 0;
-			}
-			*/
-			write(clnt_sock, msg2, sizeof(msg2)-1);
+            }
+
+            write(clnt_sock, msg2, strlen(msg2));
         } while (1);
         printf("clnt_sock: client %d disconnected\n", clnt_sock);
+        close(clnt_sock);
     } while (1);
-
-    close(clnt_sock);
     close(serv_sock);
     return 0;
 }
@@ -103,5 +108,6 @@ int main(int argc, char *argv[]) {
 void error_handling(char *message) {
     fputs(message, stderr);
     fputc('\n', stderr);
+    exit(1);
 }
 
