@@ -4,8 +4,14 @@
 #include <unistd.h>
 #include <arpa/inet.h>
 #include <sys/socket.h>
+
+#include <pthread.h>
+
 #define BUFFSIZE 100
-void error_handling(char *message);
+
+void error_handling(char *message, int num);
+void* thread_main(void *arg);
+
 int main(int argc, char* argv[])
 {
 	int sock;
@@ -13,22 +19,38 @@ int main(int argc, char* argv[])
 	char message[BUFFSIZE];
 	int str_len;
 	int stdin_fd=fileno(stdin);
+
+	pthread_t t_id;
+	int thread_param=5;
+
 	printf("stdin_fd : %d\n",stdin_fd);
 	if(argc!=3){
 		printf("Usage : %s <IP> <port>\n", argv[0]);
 		exit(1);
 	}
+
 	sock=socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
 	if(sock < 0)
-		error_handling("socket() error");
+		error_handling("socket() error",1);
 	memset(&serv_addr, 0, sizeof(serv_addr));
 	serv_addr.sin_family=AF_INET;
 	serv_addr.sin_addr.s_addr=inet_addr(argv[1]);
 	serv_addr.sin_port=htons(atoi(argv[2]));
+
 	if(connect(sock, (struct sockaddr*)&serv_addr, sizeof(serv_addr)) < 0) 
-		error_handling("connect() error!");
+		error_handling("connect() error!",2);
+
+	if (pthread_create(&t_id, NULL, thread_main, (void*)&thread_param)!=0)
+	{
+		puts("pthread_create() error");
+		perror("pthread_create()");
+		error_handling("pthread_create() error!", 10);
+	}
+	sleep(10);	//sec
+	puts("end of main");
+
 	do {
-//  -------------------- keyboard_thread() ------------------------
+		// keyboard_thread()
 		fputs("문자열을 입력하세요(quit:종료) : ",stdout);
 		fgets(message, sizeof(message), stdin );
 		str_len = strlen(message)-1;
@@ -37,9 +59,9 @@ int main(int argc, char* argv[])
 			break;
 		str_len=write(sock,message,str_len) ;    //입력 문자열을 서버로 전송
 		if(str_len <= 0)
-			error_handling("write() error");
-//  --------------------------------------------------------------
-//  --------------------- socket_thread() ------------------------
+			error_handling("write() error",3);
+
+		// socket_thread()
 		str_len=read(sock, message, sizeof(message)-1);
 		if(str_len > 0)
 		{
@@ -49,16 +71,27 @@ int main(int argc, char* argv[])
 		else if(str_len == 0) //서버 소켓 종료시
 			break;
 		else 
-			error_handling("read() error!");
-//  ------------------------------------------------------
+			error_handling("read() error!",4);
 	} while(1);
 	close(sock);
 	return 0;
 }
-void error_handling(char *message)
+
+void error_handling(char *message, int num)
 {
 //	perror("error_handling()");
 	fputs(message, stderr);
 	fputc('\n', stderr);
-	exit(1);
+	exit(num);
+}
+
+void* thread_main(void *arg)
+{
+	int i;
+	int cnt=*((int*)arg);
+	for(i=0; i<<cnt; i++)
+	{
+		sleep(1); puts("running thread");
+	}
+	return NULL;
 }
