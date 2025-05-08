@@ -48,6 +48,7 @@ int main(int argc, char *argv[])
         temps = reads;
         timeout.tv_sec = 2;
         timeout.tv_usec = 0;
+
         result = select(sock + 1, &temps, 0, 0, &timeout);
         if (result < 0)
         {
