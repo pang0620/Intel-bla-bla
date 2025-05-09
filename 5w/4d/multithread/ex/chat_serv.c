@@ -73,12 +73,14 @@ void * handle_clnt(void * arg)
 	{
 		if(clnt_sock==clnt_socks[i])
 		{
-			while(i++<clnt_cnt-1)
+			while(i<clnt_cnt-1) {
 				clnt_socks[i]=clnt_socks[i+1];
+				i++;
+			}
 			break;
 		}
 	}
-	clnt_cnt--;
+	clnt_cnt--;	//3456 -> 456(6)
 	pthread_mutex_unlock(&mutx);
 	close(clnt_sock);
 	return NULL;
