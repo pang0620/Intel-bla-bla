@@ -40,6 +40,7 @@ typedef struct
     char pw[ID_SIZE];
 } CLIENT_INFO;
 
+char* custom_itos(int num);
 void *clnt_connection(void *arg);
 void send_msg(MSG_INFO *msg_info, CLIENT_INFO *first_client_info);
 void error_handling(char *msg);
@@ -61,6 +62,9 @@ int main(int argc, char *argv[])
     char *pToken;
     char *pArray[ARR_CNT] = {0};
     char msg[BUF_SIZE];
+	char buf_idpw[BUF_SIZE];
+
+	int fd, n;
 
 	//replace this into file:
 	//0 PASSWD
@@ -68,6 +72,71 @@ int main(int argc, char *argv[])
 	//2 PASSWD
 	//3 PASSWD
 	//...
+
+	//write
+	if ((fd = open("./idpasswd.txt", O_WRONLY | O_CREAT | O_TRUNC,
+					S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH)) < 0)
+	{
+		perror("open()");
+		return 22;
+	}
+
+	for (int i=0; i<MAX_CLNT; i++)
+	{
+		strcpy(buf_idpw, "");
+		strcat(buf_idpw, custom_itos(i));
+		strcat(buf_idpw, " ");
+		strcat(buf_idpw, "PASSWD\n");	// some **char I guess
+		write(fd, buf_idpw, strlen(buf_idpw));
+	}
+	write(fd, "HM_CON PASSWD\n", strlen("HM_CON PASSWD\n"));
+
+	close(fd);
+
+
+	//read
+		//check copy.c
+		
+		//open(fd, blablabla)
+		//read(asdf, buf, asdf)
+		//write(password.txt, buf, asdf)
+		//close(fd)
+		
+	if ((fd = open("./idpasswd.txt", O_RDONLY)) < 0) {
+        perror(argv[1]);
+        return 23;
+    }
+
+		
+	CLIENT_INFO client_info[MAX_CLNT];
+	for (int i=0; i<MAX_CLNT; i++)
+	{
+		client_info[i].index=0;
+		client_info[i].fd=-1;
+		strcpy(client_info[i].ip, "");
+		// read() is not appopriate for lines... but there's an emergency at sunday 21:00...
+		// leaving. sorry teacher
+		if (read(fd, buf_idpw, BUF_SIZE) > 0)
+		{
+			printf("%s\n", buf_idpw);
+			strcpy(client_info[i].ip, strtok(buf_idpw, " "));
+			strcpy(client_info[i].ip, strtok(NULL, " "));
+		}
+		else
+		{
+			perror("fgets");
+			return 24;
+		}
+	} while(1);
+	
+	/*
+    int index;
+    int fd;
+    char ip[20];
+    char id[ID_SIZE];
+    char pw[ID_SIZE];
+	*/
+	/*
     CLIENT_INFO client_info[MAX_CLNT] = {{0, -1, "", "1", "PASSWD"},
                                          {0, -1, "", "2", "PASSWD"},
                                          {0, -1, "", "3", "PASSWD"},
@@ -100,6 +169,7 @@ int main(int argc, char *argv[])
                                          {0, -1, "", "30", "PASSWD"},
                                          {0, -1, "", "31", "PASSWD"},
                                          {0, -1, "", "HM_CON", "PASSWD"}};
+										 */
 
     if (argc != 2)
     {
@@ -307,4 +377,23 @@ void error_handling(char *msg)
 void log_file(char *msgstr)
 {
     fputs(msgstr, stdout);
+}
+
+char* custom_itos(int num)
+{
+	static char result[3];
+	if (num>=10)
+	{
+		result[0] = num/10+48;
+		result[1] = num%10+48;
+		result[2] = '\0';
+	}
+	else
+	{
+		num += 48;
+		result[0] = num;
+		result[1] = '\0';
+	}
+
+	return result;
 }
