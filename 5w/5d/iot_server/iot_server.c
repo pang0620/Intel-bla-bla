@@ -17,7 +17,7 @@
 #include <unistd.h>
 
 #define BUF_SIZE 100
-#define MAX_CLNT 32
+#define MAX_CLNT 34
 #define ID_SIZE 10
 #define ARR_CNT 5
 
@@ -57,7 +57,7 @@ int main(int argc, char *argv[])
     int sock_option = 1;
     pthread_t t_id[MAX_CLNT] = {0};
     int str_len = 0;
-    int i;
+    int i=0;
     char idpasswd[(ID_SIZE * 2) + 3];
     char *pToken;
     char *pArray[ARR_CNT] = {0};
@@ -89,45 +89,44 @@ int main(int argc, char *argv[])
 		strcat(buf_idpw, "PASSWD\n");	// some **char I guess
 		write(fd, buf_idpw, strlen(buf_idpw));
 	}
-	write(fd, "HM_CON PASSWD\n", strlen("HM_CON PASSWD\n"));
+	//write(fd, "HM_CON PASSWD\n", strlen("HM_CON PASSWD\n"));
 
 	close(fd);
 
-
-	//read
-		//check copy.c
-		
-		//open(fd, blablabla)
-		//read(asdf, buf, asdf)
-		//write(password.txt, buf, asdf)
-		//close(fd)
-		
-	if ((fd = open("./idpasswd.txt", O_RDONLY)) < 0) {
-        perror(argv[1]);
-        return 23;
-    }
-
-		
-	CLIENT_INFO client_info[MAX_CLNT];
-	for (int i=0; i<MAX_CLNT; i++)
+	//read&store
+	//f-function series are better.
+	//open read write <- for actual devices that's low level
+	FILE * idFd = fopen("./idpasswd.txt", "r");
+	if (idFd == NULL)
 	{
-		client_info[i].index=0;
+		perror("fopen(): idpasswd.txt");
+		exit(1);
+	}
+	char id[ID_SIZE];
+	char pw[ID_SIZE];
+	CLIENT_INFO * client_info = (CLIENT_INFO *)calloc(sizeof(CLIENT_INFO), MAX_CLNT);
+	if (client_info == NULL)
+	{
+		perror("calloc()");
+		exit(1);
+	}
+	do
+	{
+		str_len = fscanf(idFd, "%s %s", id, pw);
+		if(str_len <= 0)
+			break;
 		client_info[i].fd=-1;
-		strcpy(client_info[i].ip, "");
-		// read() is not appopriate for lines... but there's an emergency at sunday 21:00...
-		// leaving. sorry teacher
-		if (read(fd, buf_idpw, BUF_SIZE) > 0)
+		strcpy(client_info[i].id, id);
+		strcpy(client_info[i].pw, pw);
+		i++;
+		if(i > MAX_CLNT)
 		{
-			printf("%s\n", buf_idpw);
-			strcpy(client_info[i].ip, strtok(buf_idpw, " "));
-			strcpy(client_info[i].ip, strtok(NULL, " "));
-		}
-		else
-		{
-			perror("fgets");
-			return 24;
+			//error point: ???
+			printf("error: client_info pull(Max:%d\n", MAX_CLNT);
+			break;
 		}
 	} while(1);
+	fclose(idFd);
 	
 	/*
     int index;
