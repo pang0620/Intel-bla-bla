@@ -127,48 +127,6 @@ int main(int argc, char *argv[])
 		}
 	} while(1);
 	fclose(idFd);
-	
-	/*
-    int index;
-    int fd;
-    char ip[20];
-    char id[ID_SIZE];
-    char pw[ID_SIZE];
-	*/
-	/*
-    CLIENT_INFO client_info[MAX_CLNT] = {{0, -1, "", "1", "PASSWD"},
-                                         {0, -1, "", "2", "PASSWD"},
-                                         {0, -1, "", "3", "PASSWD"},
-                                         {0, -1, "", "4", "PASSWD"},
-                                         {0, -1, "", "5", "PASSWD"},
-                                         {0, -1, "", "6", "PASSWD"},
-                                         {0, -1, "", "7", "PASSWD"},
-                                         {0, -1, "", "8", "PASSWD"},
-                                         {0, -1, "", "9", "PASSWD"},
-                                         {0, -1, "", "10", "PASSWD"},
-                                         {0, -1, "", "11", "PASSWD"},
-                                         {0, -1, "", "12", "PASSWD"},
-                                         {0, -1, "", "13", "PASSWD"},
-                                         {0, -1, "", "14", "PASSWD"},
-                                         {0, -1, "", "15", "PASSWD"},
-                                         {0, -1, "", "16", "PASSWD"},
-                                         {0, -1, "", "17", "PASSWD"},
-                                         {0, -1, "", "18", "PASSWD"},
-                                         {0, -1, "", "19", "PASSWD"},
-                                         {0, -1, "", "20", "PASSWD"},
-                                         {0, -1, "", "21", "PASSWD"},
-                                         {0, -1, "", "22", "PASSWD"},
-                                         {0, -1, "", "23", "PASSWD"},
-                                         {0, -1, "", "24", "PASSWD"},
-                                         {0, -1, "", "25", "PASSWD"},
-                                         {0, -1, "", "26", "PASSWD"},
-                                         {0, -1, "", "27", "PASSWD"},
-                                         {0, -1, "", "28", "PASSWD"},
-                                         {0, -1, "", "29", "PASSWD"},
-                                         {0, -1, "", "30", "PASSWD"},
-                                         {0, -1, "", "31", "PASSWD"},
-                                         {0, -1, "", "HM_CON", "PASSWD"}};
-										 */
 
     if (argc != 2)
     {
