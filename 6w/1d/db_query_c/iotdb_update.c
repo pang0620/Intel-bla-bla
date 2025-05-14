@@ -18,6 +18,7 @@ int main(int argc, char **argv)
 	int res;
 
 	char sensorId[20];
+	int id;
 	int illu;
 	double temp;
 	double humi;
@@ -29,16 +30,16 @@ int main(int argc, char **argv)
 		exit(1);
 	}  
 
-	if(argc != 6)
+	if(argc != 5)
 	{
-		printf("Usage : %s sensorId id illu temp humi\n", argv[0]);
+		printf("Usage : %s id illu temp humi\n", argv[0]);
 		return 1;
 	}
-        strcpy(sensorId,argv[1]);
-		id = atoi(argv[2]);
-        illu = atof(argv[3]);
-        temp = atof(argv[4]);
-        humi = atof(argv[5]);
+        //strcpy(sensorId,argv[1]);
+		id = atoi(argv[1]);
+        illu = atof(argv[2]);
+        temp = atof(argv[3]);
+        humi = atof(argv[4]);
 
   	if (mysql_real_connect(con, "127.0.0.1", "iot", "pwiot", 
 				"iotdb", 0, NULL, 0) == NULL) 
@@ -46,8 +47,7 @@ int main(int argc, char **argv)
 		finish_with_error(con);
 	}    
 
- 	sprintf(sql_cmd, "update into sensor(name, date, time,illu, temp, humi) values(\"%s\",now(),now(),%d,%f,%f)", sensorId, id, illu, temp, humi);
-	sprintf(sql_cmd, "update sensor set illu=%d temp=%f humi=%f where id=%d;", illu, temp, humi, id);
+	sprintf(sql_cmd, "update sensor set date=now(), time=now(), illu=%d, temp=%f, humi=%f where id=%d;", illu, temp, humi, id);
 
 	res = mysql_query(con, sql_cmd);
 	if (!res)
