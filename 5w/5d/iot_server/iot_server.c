@@ -74,6 +74,7 @@ int main(int argc, char *argv[])
 	//...
 
 	//write
+	/*
 	if ((fd = open("./idpasswd.txt", O_WRONLY | O_CREAT | O_TRUNC,
 					S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH)) < 0)
 	{
@@ -92,6 +93,7 @@ int main(int argc, char *argv[])
 	//write(fd, "HM_CON PASSWD\n", strlen("HM_CON PASSWD\n"));
 
 	close(fd);
+	*/
 
 	//read&store
 	//f-function series are better.
