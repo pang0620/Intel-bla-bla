@@ -17,7 +17,7 @@
 #include <errno.h>
 
 #define BUF_SIZE 100
-#define MAX_CLNT 35
+#define MAX_CLNT 36
 #define ID_SIZE 10
 #define ARR_CNT 5
 
