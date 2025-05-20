@@ -1,7 +1,7 @@
 #CC:=arm-linux-gcc
 CC:=gcc
 
-TARGET_CLN_SENSOR=iot_client_sensor
+TARGET_CLN_SENSOR=iot_client_device
 OBJECT_CLN_SENSOR=$(TARGET_CLN_SENSOR).o 
 
 LDFLAGS=-D_REENTRANT -pthread

@@ -42,6 +42,7 @@ void * clnt_connection(void * arg);
 void send_msg(MSG_INFO * msg_info, CLIENT_INFO * first_client_info);
 void error_handling(char * msg);
 void log_file(char * msgstr);
+void getlocaltime(char * buf);
 
 int clnt_cnt=0;
 pthread_mutex_t mutx;
@@ -298,6 +299,12 @@ void send_msg(MSG_INFO * msg_info, CLIENT_INFO * first_client_info)
 				write(msg_info->fd, idlist, strlen(idlist));
 				free(idlist);
 		}
+		else if(!strcmp(msg_info->to,"GETTIME"))
+		{
+				sleep(1);
+				getlocaltime(msg_info->msg);
+				write(msg_info->fd, msg_info->msg, strlen(msg_info->msg));
+		}
 		else
 				for(i=0;i<MAX_CLNT;i++)
 						if((first_client_info+i)->fd != -1)	
@@ -315,4 +322,18 @@ void error_handling(char *msg)
 void log_file(char * msgstr)
 {
 		fputs(msgstr,stdout);
+}
+
+void getlocaltime(char * buf)
+{
+		struct tm *t;
+		time_t tt;
+		char wday[7][4] = {"SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"};
+		tt = time(NULL);
+		if(errno==EFAULT)
+				perror("time()");
+		t = localtime(&tt);
+		sprintf(buf, "[GETTIME]%02d.%02d.%02d %02d:%02d:%02d %s", t->tm_year+1900-2000, t->tm_mon+1, t->tm_mday,t->tm_hour,t->tm_min,t->tm_sec,wday[t->tm_wday]);
+
+		return;
 }
