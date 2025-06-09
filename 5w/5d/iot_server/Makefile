@@ -7,8 +7,14 @@ OBJECT_SRV=$(TARGET_SRV).o
 TARGET_CLN=iot_client
 OBJECT_CLN=$(TARGET_CLN).o 
 
-#LDFLAGS=-D_REENTRANT -pthread -lmysqlclient
-LDFLAGS=-D_REENTRANT -pthread
+TARGET_CLN=iot_client_device
+OBJECT_CLN=$(TARGET_CLN).o 
+
+TARGET_CLN=iot_client_bluetooth
+OBJECT_CLN=$(TARGET_CLN).o 
+
+LDFLAGS=-D_REENTRANT -pthread -lmysqlclient -lbluetooth
+#LDFLAGS=-D_REENTRANT -pthread
 
 all : $(TARGET_SRV) $(TARGET_CLN)
 
